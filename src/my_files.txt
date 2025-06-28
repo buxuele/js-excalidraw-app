@@ -1,92 +1,122 @@
 
 文件: App.css
 内容:
+/* --- 全局与基础样式 --- */
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: #f8f9fa; /* 给一个柔和的背景色 */
 }
-.App {
-  display: flex;
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
-}
-.sidebar {
-  width: 200px;
-  background-color: #f7f7f7;
-  border-right: 1px solid #e0e0e0;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+
+/* --- HomePage 容器样式 --- */
+.home-page-container {
+  width: 95%;
+  max-width: 1400px; /* 给一个最大宽度，防止在大屏幕上过于分散 */
+  margin: 0 auto; /* 水平居中 */
+  padding: 2rem;
   box-sizing: border-box;
 }
-.sidebar h2 {
-  margin-top: 0;
-  font-size: 1.2rem;
+
+.home-page-container h1 {
+  font-size: 2.5rem;
+  color: #212529;
+  margin-bottom: 2rem;
 }
-.sidebar .add-page-button {
-  width: 100%;
-  padding: 10px;
-  background-color: #007aff;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
+
+/* --- 网格布局 --- */
+.projects-grid {
+  display: grid;
+  /* 关键：创建响应式 4 列布局 */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem; /* 网格间距 */
+}
+
+/* --- 卡片通用样式 --- */
+.project-card {
+  background-color: white;
+  border-radius: 12px;
+  border: 1px solid #dee2e6;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
+  overflow: hidden; /* 确保内容不会溢出圆角 */
   cursor: pointer;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  display: flex;
+  flex-direction: column;
 }
-.sidebar .add-page-button:hover {
-  background-color: #0056b3;
+
+.project-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
 }
-.page-list {
-  list-style: none;
+
+/* --- “新建”卡片的特殊样式 --- */
+.new-project-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 250px; /* 和普通卡片保持一致的高度 */
+  border-style: dashed;
+  color: #868e96;
+}
+
+.new-project-card:hover {
+  background-color: #f1f3f5;
+  color: #495057;
+}
+
+.new-project-card .plus-icon {
+  font-size: 4rem;
+  font-weight: 200;
+}
+
+/* --- 作品卡片的缩略图占位符 --- */
+/* --- 新的 SVG 缩略图容器样式 --- */
+.card-thumbnail {
+  height: 180px;
+  overflow: hidden; /* 隐藏 SVG 溢出的部分 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff; /* 给一个白色背景，以防绘图是透明的 */
+}
+
+.card-thumbnail svg {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+
+
+/* --- 卡片底部信息区域 --- */
+.card-info {
+  padding: 1rem;
+  border-top: 1px solid #e9ecef;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-info .page-name {
+  font-weight: 600;
+  color: #343a40;
+}
+
+/* --- 重命名输入框样式 (用于卡片内) --- */
+.rename-input-card {
+  width: 100%;
   padding: 0;
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-bottom: 2px solid #007aff;
+  outline: none;
 }
 
-/* 列表项现在是右键菜单的触发区域 */
-.page-list li {
-  position: relative;
-}
-
-.page-list button {
-  width: 100%;
-  padding: 10px;
-  text-align: left;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  cursor: pointer;
-}
-.page-list button.active {
-  background-color: #e0e8ff;
-  border-color: #007aff;
-  font-weight: bold;
-}
-.rename-input {
-  width: 100%;
-  padding: 10px;
-  font-size: 0.9rem;
-  border: 1px solid #007aff;
-  border-radius: 6px;
-  box-sizing: border-box;
-}
-main {
-  flex-grow: 1;
-  display: flex;
-}
-.excalidraw-wrapper {
-  width: 100%;
-  height: 100%; 
-}
-
-/* --- 新增：上下文菜单 (Context Menu) 的样式 --- */
+/* --- 右键菜单样式 (保持不变) --- */
 .context-menu {
   position: absolute;
-  z-index: 1000; /* 确保在最上层 */
+  z-index: 1000;
   background-color: white;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -110,248 +140,45 @@ main {
   background-color: #f0f0f0;
 }
 
-/* 删除按钮可以给个特殊颜色 */
 .context-menu-item.delete {
   color: #d93025;
 }
 
-
-/* (在 App.css 文件末尾追加) */
-
-/* 侧边栏头部的容器，使用 Flexbox 来对齐标题和按钮 */
-.sidebar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px; /* 和下面的按钮拉开一点距离 */
-}
-
-.sidebar-header h2 {
-  margin: 0; /* 移除 h2 的默认 margin */
-}
-
-/* 侧边栏开关按钮的样式 */
-.sidebar-toggle-button {
-  background: #e0e0e0;
-  border: none;
-  border-radius: 8px;
-  width: 32px;  /* 尺寸大一点 */
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.2s, transform 0.3s ease-in-out;
-}
-
-.sidebar-toggle-button:hover {
-  background: #c7c7c7;
-}
-
-/* 按钮内部的 SVG 图标 */
-.sidebar-toggle-button svg {
-  width: 20px;
-  height: 20px;
-  color: #c22d2d;
-  transition: transform 0.3s ease-in-out;
-}
-
-
-/* --- 侧边栏收起/展开的动画 --- */
-/* 默认状态 */
-.sidebar {
-  transition: width 0.3s ease-in-out;
-}
-
-/* 当侧边栏有关闭状态的类时 */
-.sidebar.closed {
-  width: 0;
-  padding-left: 0;
-  padding-right: 0;
-  overflow: hidden; /* 隐藏内部所有内容 */
-}
-
-/* 按钮的旋转动画 */
-.sidebar.closed + main .sidebar-toggle-button svg {
-  transform: rotate(180deg);
-}
-
-/* 我们需要把按钮移动到主内容区，当侧边栏关闭时也能看到它 */
-.main-content {
-  position: relative; /* 关键：让内部的绝对定位元素相对于它 */
-}
-
-/* 当侧边栏关闭时，我们需要在主内容区显示一个“幽灵”按钮 */
-.sidebar-toggle-button.floating {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  z-index: 100;
+/* --- 绘图页面的样式 (保持不变) --- */
+.excalidraw-wrapper {
+  width: 100%;
+  height: 100%;
 }
 
 文件: App.jsx
 内容:
-import React, { useState, useEffect, useCallback } from 'react';
-import { Excalidraw } from "@excalidraw/excalidraw";
-import debounce from 'lodash.debounce';
-
-import '@excalidraw/excalidraw/index.css';
-import './App.css';
-import { db } from './db';
-
-const ContextMenu = ({ x, y, pageId, onRename, onDelete, onClose, pageHistory }) => {
-  useEffect(() => {
-    const handleClickOutside = () => onClose();
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, [onClose]);
-
-  const handleRestore = async (timestamp) => {
-    if (window.confirm("确定要恢复到这个历史版本吗？当前绘图将被覆盖。")) {
-      await db.restorePageVersion(pageId, timestamp);
-      window.location.reload(); // 最简单粗暴的刷新方式
-    }
-    onClose();
-  };
-
-  return (
-    <div className="context-menu" style={{ top: y, left: x }}>
-      <button className="context-menu-item" onClick={() => { onRename(); onClose(); }}>重命名</button>
-      <button className="context-menu-item delete" onClick={() => { onDelete(pageId); onClose(); }}>删除页面</button>
-      {/* 历史记录功能 */}
-      {pageHistory && pageHistory.length > 0 && <hr style={{margin: '4px 0', borderTop: '1px solid #eee'}}/>}
-      {pageHistory?.map(version => (
-        <button key={version.timestamp} className="context-menu-item" onClick={() => handleRestore(version.timestamp)}>
-          恢复到 {new Date(version.timestamp).toLocaleTimeString()}
-        </button>
-      )).reverse()}
-    </div>
-  );
-};
-
-// 侧边栏开关按钮的 SVG 图标
-const SidebarToggleIcon = () => (
-  <svg viewBox="0 0 24 24"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"></path></svg>
-);
-
+import React, { useState } from 'react';
+import HomePage from './HomePage';
+import EditorPage from './EditorPage';
 
 function App() {
-  const [pages, setPages] = useState([]);
-  const [activePageId, setActivePageId] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [renamingPageId, setRenamingPageId] = useState(null);
-  const [renameInputValue, setRenameInputValue] = useState('');
-  const [contextMenu, setContextMenu] = useState({ visible: false });
+  // `currentPageId` 是我们应用的核心状态。
+  // 如果是 null，就显示 HomePage。
+  // 如果有值（比如 'page-xxx'），就显示 EditorPage。
+  const [currentPageId, setCurrentPageId] = useState(null);
 
-  // 新增：侧边栏状态
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-
-  // 省略大部分已有函数...
-  useEffect(() => {
-    const loadDataFromDB = async () => {
-      setIsLoading(true);
-      let dbPages = await db.getAllPages();
-      dbPages.sort((a, b) => b.id.localeCompare(a.id));
-
-      if (dbPages.length === 0) {
-        const initialPage = { id: `page-${Date.now()}`, name: '我的第一个草稿', data: [], history: [] };
-        await db.upsertPage(initialPage);
-        setPages([initialPage]);
-        setActivePageId(initialPage.id);
-      } else {
-        setPages(dbPages);
-        setActivePageId(dbPages[0]?.id || null);
-      }
-      setIsLoading(false);
-    };
-    loadDataFromDB();
-  }, []);
-
-  const handleDrawingChange = useCallback(
-    debounce(async (elements) => {
-      if (!activePageId) return;
-      // 注意：这里只传入 id 和 data，让 upsertPage 自己处理 history
-      await db.upsertPage({ id: activePageId, data: elements });
-    }, 1000), // 把 debounce 时间延长一点，让快照不会太频繁
-    [activePageId]
-  );
-  
-  const handleAddPage = async () => {
-    const newPage = { id: `page-${Date.now()}`, name: `新草稿`, data: [], history: [] };
-    setPages(currentPages => [newPage, ...currentPages]);
-    setActivePageId(newPage.id);
-    await db.upsertPage(newPage);
-  };
-  
-  const startRename = (page) => { /* ...保持不变... */ setContextMenu({ visible: false }); setRenamingPageId(page.id); setRenameInputValue(page.name); };
-  const handleRenameSubmit = async () => { /* ...保持不变... */ if (!renamingPageId) return; const finalName = renameInputValue.trim() || "未命名草稿"; setPages(pages.map(p => (p.id === renamingPageId ? { ...p, name: finalName } : p))); await db.upsertPage({ id: renamingPageId, name: finalName }); setRenamingPageId(null); };
-  const handleRenameKeyDown = (event) => { /* ...保持不变... */ if (event.key === 'Enter') handleRenameSubmit(); else if (event.key === 'Escape') setRenamingPageId(null); };
-
-  const handleDeletePage = async (pageIdToDelete) => {
-    if (!window.confirm("确定要永久删除这个页面吗？此操作无法撤销。")) return;
-    await db.deletePage(pageIdToDelete);
-    const newPages = pages.filter(p => p.id !== pageIdToDelete);
-    setPages(newPages);
-    if (activePageId === pageIdToDelete) setActivePageId(newPages[0]?.id || null);
+  // 这个函数会由 HomePage 调用，告诉 App 我们要去某个编辑器页面了
+  const handleNavigateToEditor = (pageId) => {
+    setCurrentPageId(pageId);
   };
 
-  const handleContextMenu = (event, pageId) => {
-    event.preventDefault();
-    setRenamingPageId(null);
-    setContextMenu({
-      visible: true, x: event.pageX, y: event.pageY, pageId: pageId
-    });
+  // 这个函数会由 EditorPage 调用，告诉 App 我们要返回主页了
+  const handleBackToHome = () => {
+    setCurrentPageId(null);
   };
 
-  const activePage = pages.find(p => p.id === activePageId);
-
-  // 侧边栏按钮组件，可以根据状态决定显示在哪里
-  const ToggleButton = ({ isFloating = false }) => (
-    <button 
-      className={`sidebar-toggle-button ${isFloating ? 'floating' : ''}`}
-      onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-    >
-      <SidebarToggleIcon />
-    </button>
-  );
-
-  if (isLoading) return <div>正在加载...</div>;
-
+  // 根据 currentPageId 的值，决定渲染哪个视图
   return (
-    <div className="App">
-      <aside className={`sidebar ${isSidebarOpen ? '' : 'closed'}`}>
-        <div className="sidebar-header">
-          <h2>我的页面</h2>
-          <ToggleButton />
-        </div>
-        <button className="add-page-button" onClick={handleAddPage}>+ 新建页面</button>
-        <ul className="page-list">
-          {pages.map(page => (
-            <li key={page.id} onContextMenu={(e) => handleContextMenu(e, page.id)}>
-              {/* ...重命名和按钮的 JSX 保持不变... */}
-              {renamingPageId === page.id ? ( <input type="text" className="rename-input" value={renameInputValue} onChange={(e) => setRenameInputValue(e.target.value)} onBlur={handleRenameSubmit} onKeyDown={handleRenameKeyDown} autoFocus /> ) : ( <button className={page.id === activePageId ? 'active' : ''} onClick={() => setActivePageId(page.id)} onDoubleClick={() => startRename(page)}> {page.name} </button> )}
-            </li>
-          ))}
-        </ul>
-      </aside>
-
-      <main className="main-content">
-        {!isSidebarOpen && <ToggleButton isFloating={true} />}
-        {activePage && (
-          <div className="excalidraw-wrapper">
-            <Excalidraw key={activePage.id} initialData={{ elements: activePage.data }} onChange={handleDrawingChange} />
-          </div>
-        )}
-      </main>
-
-      {contextMenu.visible && (
-        <ContextMenu 
-          x={contextMenu.x} y={contextMenu.y} pageId={contextMenu.pageId}
-          onRename={() => startRename(pages.find(p => p.id === contextMenu.pageId))}
-          onDelete={handleDeletePage}
-          onClose={() => setContextMenu({ visible: false })}
-          pageHistory={pages.find(p => p.id === contextMenu.pageId)?.history}
-        />
+    <div>
+      {currentPageId === null ? (
+        <HomePage onNavigateToPage={handleNavigateToEditor} />
+      ) : (
+        <EditorPage pageId={currentPageId} onBack={handleBackToHome} />
       )}
     </div>
   );
@@ -364,7 +191,7 @@ export default App;
 import { openDB } from 'idb';
 
 const DB_NAME = 'my-excalidraw-app-db';
-const DB_VERSION = 1; 
+const DB_VERSION = 1;
 const STORE_NAME = 'pages';
 
 const dbPromise = openDB(DB_NAME, DB_VERSION, {
@@ -379,64 +206,161 @@ export const db = {
   async getAllPages() {
     return (await dbPromise).getAll(STORE_NAME);
   },
+  
+  async getPageById(id) {
+    return (await dbPromise).get(STORE_NAME, id);
+  },
 
-  // 修改：upsertPage 现在也负责管理历史记录
+  // 直接存入或更新整个页面对象，保持简单
   async upsertPage(page) {
-    const tx = (await dbPromise).transaction(STORE_NAME, 'readwrite');
-    const store = tx.objectStore(STORE_NAME);
-    
-    // 获取当前数据库中的页面数据，以便更新 history
-    const currentPageState = await store.get(page.id);
-
-    // 创建一个新的 history 数组
-    let newHistory = currentPageState?.history || [];
-    
-    // 如果 data 字段存在，说明这是一次绘图更新，需要创建快照
-    if (page.data) {
-      // 将当前的 data 作为一个快照推入 history
-      newHistory.push({
-        timestamp: Date.now(),
-        data: currentPageState?.data || [] // 保存的是上一个状态
-      });
-
-      // 限制历史记录的数量，比如只保留最新的 10 个
-      if (newHistory.length > 10) {
-        newHistory = newHistory.slice(newHistory.length - 10);
-      }
-    }
-
-    // 组合最新的页面数据和新的历史记录
-    const pageToStore = {
-      ...currentPageState, // 保留旧的字段
-      ...page,             // 应用新的字段 (name, data etc.)
-      history: newHistory, // 更新历史记录
-    };
-
-    await store.put(pageToStore);
-    return tx.done;
+    return (await dbPromise).put(STORE_NAME, page);
   },
 
   async deletePage(id) {
     return (await dbPromise).delete(STORE_NAME, id);
   },
-
-  // 新增：恢复到某个历史版本
-  async restorePageVersion(pageId, timestamp) {
-    const tx = (await dbPromise).transaction(STORE_NAME, 'readwrite');
-    const store = tx.objectStore(STORE_NAME);
-    const page = await store.get(pageId);
-    
-    if (page && page.history) {
-      const versionToRestore = page.history.find(h => h.timestamp === timestamp);
-      if (versionToRestore) {
-        // 将历史版本的数据作为当前数据，但不改变历史记录本身
-        page.data = versionToRestore.data;
-        await store.put(page);
-      }
-    }
-    return tx.done;
-  }
 };
+
+文件: EditorPage.jsx
+内容:
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { Excalidraw, exportToBlob } from "@excalidraw/excalidraw";
+import debounce from 'lodash.debounce';
+
+import '@excalidraw/excalidraw/index.css';
+import './App.css';
+import { db } from './db';
+
+// 一个工具函数，把 Blob 转成 Base64
+const blobToBase64 = (blob) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = () => resolve(reader.result);
+    reader.readAsDataURL(blob);
+  });
+};
+
+const BackToHomeButton = ({ onClick }) => ( /* ...保持不变... */ <button onClick={onClick} style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 100, background: '#f0f0f0', border: '1px solid #ccc', padding: '8px 12px', borderRadius: '8px', cursor: 'pointer' }}> ← 返回主页 </button> );
+
+function EditorPage({ pageId, onBack }) {
+  const [page, setPage] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const excalidrawRef = useRef(null); // 创建一个 ref 来访问 Excalidraw API
+
+  useEffect(() => { /* ...加载逻辑保持不变... */ const loadPageData = async () => { if (!pageId) return; setIsLoading(true); const pageData = await db.getPageById(pageId); setPage(pageData); setIsLoading(false); }; loadPageData(); }, [pageId]);
+
+  // 当绘图变化时，只更新 data 字段
+  const handleDrawingChange = useCallback(
+    debounce(async (elements) => {
+      if (!page) return;
+      const updatedPage = { ...page, data: elements };
+      await db.upsertPage(updatedPage);
+      // 同时更新当前组件的 state，以便生成缩略图时能拿到最新数据
+      setPage(updatedPage);
+    }, 500),
+    [page]
+  );
+  
+  // --- 关键修改：在返回主页前，生成并保存缩略图 ---
+  const handleBackAndSaveThumbnail = async () => {
+    if (!excalidrawRef.current || !page) {
+      onBack(); // 如果出错了，直接返回
+      return;
+    }
+    
+    // 强制保存最后一次的绘图更改
+    handleDrawingChange.flush();
+
+    const blob = await exportToBlob({
+      elements: page.data,
+      appState: {
+        exportBackground: true,
+        viewBackgroundColor: '#ffffff',
+      },
+      files: null,
+      mimeType: 'image/png',
+      quality: 0.5, // 降低质量以减小文件大小
+      width: 280,   // 设置固定宽度
+      height: 180,  // 设置固定高度
+    });
+
+    const thumbnail = await blobToBase64(blob);
+    await db.upsertPage({ ...page, thumbnail: thumbnail });
+
+    onBack(); // 完成所有操作后，再返回主页
+  };
+
+  if (isLoading) return <div>正在加载绘图...</div>;
+  if (!page) return <div>错误：找不到页面数据。</div>;
+
+  return (
+    <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
+      <BackToHomeButton onClick={handleBackAndSaveThumbnail} />
+      <div className="excalidraw-wrapper">
+        <Excalidraw
+          ref={excalidrawRef} // 绑定 ref
+          key={page.id}
+          initialData={{ elements: page.data }}
+          onChange={handleDrawingChange}
+        />
+      </div>
+    </div>
+  );
+}
+
+export default EditorPage;
+
+文件: HomePage.jsx
+内容:
+import React, { useState, useEffect } from 'react';
+import { db } from './db';
+import { generateRandomName } from './utils/nameGenerator';
+import './App.css';
+
+const ContextMenu = ({ x, y, page, onRename, onDelete, onClose }) => { /* ...保持不变... */ useEffect(() => { const handleClickOutside = () => onClose(); document.addEventListener('click', handleClickOutside); return () => document.removeEventListener('click', handleClickOutside); }, [onClose]); return ( <div className="context-menu" style={{ top: y, left: x }}> <button className="context-menu-item" onClick={() => { onRename(page); onClose(); }}>重命名</button> <button className="context-menu-item delete" onClick={() => { onDelete(page.id); onClose(); }}>删除页面</button> </div> ); };
+
+// --- 关键修改：ProjectCard 现在只需要显示图片 ---
+const ProjectCard = ({ page, ...props }) => {
+  return (
+    <div className="project-card" onClick={() => props.onSelect(page.id)} onContextMenu={(e) => props.onContextMenu(e, page)}>
+      <div className="card-thumbnail">
+        {page.thumbnail ? (
+          <img src={page.thumbnail} alt={page.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        ) : (
+          <div style={{color: '#aaa'}}>没有缩略图</div>
+        )}
+      </div>
+      <div className="card-info">
+        {/* ...重命名相关的 JSX 保持不变... */}
+        {props.renamingPageId === page.id ? ( <input type="text" className="rename-input-card" value={props.renameInputValue} onChange={(e) => props.setRenameInputValue(e.target.value)} onBlur={() => props.onRenameSubmit()} onKeyDown={(e) => { if (e.key === 'Enter') props.onRenameSubmit(); else if (e.key === 'Escape') props.onRenameSubmit(true); }} onClick={(e) => e.stopPropagation()} autoFocus /> ) : ( <span className="page-name">{page.name}</span> )}
+      </div>
+    </div>
+  );
+};
+
+// HomePage 主组件
+function HomePage({ onNavigateToPage }) {
+  // ...所有的 state 和函数都保持不变，除了 handleAddNewPage
+  const [pages, setPages] = useState([]); const [isLoading, setIsLoading] = useState(true); const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, page: null }); const [renamingPageId, setRenamingPageId] = useState(null); const [renameInputValue, setRenameInputValue] = useState(''); useEffect(() => { loadPages(); }, []); const loadPages = async () => { setIsLoading(true); let dbPages = await db.getAllPages(); dbPages.sort((a, b) => b.id.localeCompare(a.id)); setPages(dbPages); setIsLoading(false); };
+  
+  // --- 修改：新建页面时，不再需要 history 和 data 字段 ---
+  const handleAddNewPage = async () => {
+    const newPage = { id: `page-${Date.now()}`, name: generateRandomName() };
+    await db.upsertPage(newPage);
+    onNavigateToPage(newPage.id);
+  };
+  
+  // ...其余函数保持不变...
+  const handleDeletePage = async (pageId) => { if (window.confirm("确定要删除吗？")) { await db.deletePage(pageId); loadPages(); } }; const handleContextMenu = (e, page) => { e.preventDefault(); e.stopPropagation(); setRenamingPageId(null); setContextMenu({ visible: true, x: e.pageX, y: e.pageY, page: page }); }; const startRename = (page) => { setRenamingPageId(page.id); setRenameInputValue(page.name); }; const handleRenameSubmit = async (isCancel = false) => { if (!renamingPageId) return; if (!isCancel) { const finalName = renameInputValue.trim() || "未命名草稿"; const pageToUpdate = pages.find(p => p.id === renamingPageId); if (pageToUpdate && pageToUpdate.name !== finalName) { const updatedPage = { ...pageToUpdate, name: finalName }; await db.upsertPage(updatedPage); setPages(pages.map(p => p.id === renamingPageId ? updatedPage : p)); } } setRenamingPageId(null); }; if (isLoading) return <div>正在加载作品集...</div>;
+
+  return (
+    // ...主页的 JSX 结构保持不变...
+    <div className="home-page-container"> <h1>我的作品集</h1> <div className="projects-grid"> <div className="project-card new-project-card" onClick={handleAddNewPage}> <div className="plus-icon">+</div> </div> {pages.map(page => ( <ProjectCard key={page.id} page={page} onSelect={onNavigateToPage} onContextMenu={handleContextMenu} onRenameSubmit={handleRenameSubmit} renamingPageId={renamingPageId} setRenameInputValue={setRenameInputValue} renameInputValue={renameInputValue} /> ))} </div> {contextMenu.visible && ( <ContextMenu x={contextMenu.x} y={contextMenu.y} page={contextMenu.page} onRename={startRename} onDelete={handleDeletePage} onClose={() => setContextMenu({ ...contextMenu, visible: false })} /> )} </div>
+  );
+}
+
+export default HomePage;
 
 文件: index.css
 内容:
@@ -464,13 +388,7 @@ a:hover {
   color: #535bf2;
 }
 
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
+/* 这里的 body 样式已经被我们删掉了 */
 
 h1 {
   font-size: 3.2em;
@@ -509,7 +427,6 @@ button:focus-visible {
   }
 }
 
-
 文件: main.jsx
 内容:
 import { StrictMode } from 'react'
@@ -523,3 +440,33 @@ createRoot(document.getElementById('root')).render(
   </StrictMode>,
 )
 
+
+目录: utils
+内容: [这是一个目录]
+
+文件: utils\nameGenerator.js
+内容:
+const ADJECTIVES = [
+  '快乐的', '勇敢的', '聪明的', '好奇的', '闪亮的', '宁静的',
+  '巨大的', '微小的', '神秘的', '迅速的', '温暖的', '冷静的',
+  '活泼的', '温柔的', '狡猾的', '迷人的', '大胆的', '优雅的',
+  '奇幻的', '坚韧的', '耀眼的', '灵动的', '沉稳的', '俏皮的'
+];
+
+const NOUNS = [
+  '西瓜', '老虎', '月亮', '河流', '森林', '代码', '火箭',
+  '城堡', '钥匙', '旅程', '梦想', '回声', '故事', '鲸鱼',
+  '彩虹', '灯塔', '云朵', '山峰', '星辰', '书本', '风筝',
+  '海洋', '火花', '村庄', '秘密', '微风', '宇宙'
+];
+
+const VERBS = [
+  '思考', '跳跃', '飞翔', '探索', '编码', '生长', '闪耀', '漂流',
+  '奔跑', '歌唱', '旋转', '发现', '绘画', '追逐', '绽放', '遨游'
+];
+
+const getRandomElement = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+export const generateRandomName = () => {
+  return `${getRandomElement(ADJECTIVES)}${getRandomElement(NOUNS)}的${getRandomElement(VERBS)}`;
+};

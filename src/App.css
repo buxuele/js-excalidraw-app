@@ -1,129 +1,116 @@
+/* --- 全局与基础样式 --- */
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background-color: #f8f9fa; /* 给一个柔和的背景色 */
 }
-.App {
-  display: flex;
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
+
+/* --- HomePage 容器样式 --- */
+.home-page-container {
+  width: 95%;
+  max-width: 1400px; /* 给一个最大宽度，防止在大屏幕上过于分散 */
+  margin: 0 auto; /* 水平居中 */
+  padding: 2rem;
+  box-sizing: border-box;
 }
-.sidebar {
-  width: 200px;
-  background-color: #f7f7f7;
-  border-right: 1px solid #e0e0e0;
-  padding: 16px;
+
+.home-page-container h1 {
+  font-size: 2.5rem;
+  color: #212529;
+  margin-bottom: 2rem;
+}
+
+/* --- 网格布局 --- */
+.projects-grid {
+  display: grid;
+  /* 关键：创建响应式 4 列布局 */
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem; /* 网格间距 */
+}
+
+/* --- 卡片通用样式 --- */
+.project-card {
+  background-color: white;
+  border-radius: 12px;
+  border: 1px solid #dee2e6;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
+  overflow: hidden; /* 确保内容不会溢出圆角 */
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  box-sizing: border-box;
-  transition: width 0.3s ease-in-out, padding 0.3s ease-in-out;
 }
-.sidebar.closed {
-  width: 0;
-  padding-left: 0;
-  padding-right: 0;
-  overflow: hidden;
+
+.project-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
 }
-.sidebar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-.sidebar-header h2 {
-  margin: 0;
-  white-space: nowrap; /* 防止标题换行 */
-}
-.sidebar-toggle-button {
-  background: #e0e0e0;
-  border: none;
-  border-radius: 8px;
-  width: 32px;
-  height: 32px;
+
+/* --- “新建”卡片的特殊样式 --- */
+.new-project-card {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  flex-shrink: 0; /* 防止按钮被压缩 */
-}
-.sidebar-toggle-button:hover {
-  background: #c7c7c7;
-}
-.sidebar-toggle-button svg {
-  width: 24px;
-  height: 24px;
-  color: #333;
-  transition: transform 0.3s ease-in-out;
-}
-.sidebar.closed .sidebar-toggle-button svg {
-  transform: rotate(180deg);
+  min-height: 250px; /* 和普通卡片保持一致的高度 */
+  border-style: dashed;
+  color: #868e96;
 }
 
-.add-page-button {
-  width: 100%;
-  padding: 10px;
-  background-color: #007aff;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
+.new-project-card:hover {
+  background-color: #f1f3f5;
+  color: #495057;
 }
-.page-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  overflow-y: auto; /* 如果页面太多，可以滚动 */
+
+.new-project-card .plus-icon {
+  font-size: 4rem;
+  font-weight: 200;
 }
-.page-list li {
-  position: relative;
-}
-.page-list button {
-  width: 100%;
-  padding: 10px;
-  text-align: left;
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  cursor: pointer;
-  white-space: nowrap; /* 防止按钮内文字换行 */
-  overflow: hidden;
-  text-overflow: ellipsis; /* 文字太长时显示省略号 */
-  
-  /* --- 关键修复：保证按钮高度一致 --- */
-  min-height: 42px;
-  box-sizing: border-box;
+
+/* --- 作品卡片的缩略图占位符 --- */
+/* --- 新的 SVG 缩略图容器样式 --- */
+.card-thumbnail {
+  height: 180px;
+  overflow: hidden; /* 隐藏 SVG 溢出的部分 */
   display: flex;
   align-items: center;
+  justify-content: center;
+  background-color: #ffffff; /* 给一个白色背景，以防绘图是透明的 */
 }
-.page-list button.active {
-  background-color: #e0e8ff;
-  border-color: #007aff;
-  font-weight: bold;
+
+.card-thumbnail svg {
+  max-width: 100%;
+  max-height: 100%;
 }
-.rename-input {
+
+
+
+/* --- 卡片底部信息区域 --- */
+.card-info {
+  padding: 1rem;
+  border-top: 1px solid #e9ecef;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-info .page-name {
+  font-weight: 600;
+  color: #343a40;
+}
+
+/* --- 重命名输入框样式 (用于卡片内) --- */
+.rename-input-card {
   width: 100%;
-  padding: 10px;
-  font-size: 0.9rem;
-  border: 1px solid #007aff;
-  border-radius: 6px;
-  box-sizing: border-box;
-  min-height: 42px; /* 和按钮保持同样高度 */
+  padding: 0;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-bottom: 2px solid #007aff;
+  outline: none;
 }
-main {
-  flex-grow: 1;
-  display: flex;
-  position: relative;
-}
-.excalidraw-wrapper {
-  width: 100%;
-  height: 100%;
-}
+
+/* --- 右键菜单样式 (保持不变) --- */
 .context-menu {
   position: absolute;
   z-index: 1000;
@@ -133,6 +120,7 @@ main {
   padding: 8px 0;
   min-width: 150px;
 }
+
 .context-menu-item {
   display: block;
   width: 100%;
@@ -144,18 +132,17 @@ main {
   font-size: 0.9rem;
   color: #333;
 }
+
 .context-menu-item:hover {
   background-color: #f0f0f0;
 }
+
 .context-menu-item.delete {
   color: #d93025;
 }
 
-/* 浮动的侧边栏开关按钮 */
-.sidebar-toggle-button.floating {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  z-index: 100;
-  transform: rotate(180deg); /* 让它指向右边 */
+/* --- 绘图页面的样式 (保持不变) --- */
+.excalidraw-wrapper {
+  width: 100%;
+  height: 100%;
 }
