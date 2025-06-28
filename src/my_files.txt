@@ -1,0 +1,525 @@
+
+文件: App.css
+内容:
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
+.App {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+.sidebar {
+  width: 200px;
+  background-color: #f7f7f7;
+  border-right: 1px solid #e0e0e0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+}
+.sidebar h2 {
+  margin-top: 0;
+  font-size: 1.2rem;
+}
+.sidebar .add-page-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007aff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.sidebar .add-page-button:hover {
+  background-color: #0056b3;
+}
+.page-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 列表项现在是右键菜单的触发区域 */
+.page-list li {
+  position: relative;
+}
+
+.page-list button {
+  width: 100%;
+  padding: 10px;
+  text-align: left;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.page-list button.active {
+  background-color: #e0e8ff;
+  border-color: #007aff;
+  font-weight: bold;
+}
+.rename-input {
+  width: 100%;
+  padding: 10px;
+  font-size: 0.9rem;
+  border: 1px solid #007aff;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+main {
+  flex-grow: 1;
+  display: flex;
+}
+.excalidraw-wrapper {
+  width: 100%;
+  height: 100%; 
+}
+
+/* --- 新增：上下文菜单 (Context Menu) 的样式 --- */
+.context-menu {
+  position: absolute;
+  z-index: 1000; /* 确保在最上层 */
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  padding: 8px 0;
+  min-width: 150px;
+}
+
+.context-menu-item {
+  display: block;
+  width: 100%;
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.context-menu-item:hover {
+  background-color: #f0f0f0;
+}
+
+/* 删除按钮可以给个特殊颜色 */
+.context-menu-item.delete {
+  color: #d93025;
+}
+
+
+/* (在 App.css 文件末尾追加) */
+
+/* 侧边栏头部的容器，使用 Flexbox 来对齐标题和按钮 */
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px; /* 和下面的按钮拉开一点距离 */
+}
+
+.sidebar-header h2 {
+  margin: 0; /* 移除 h2 的默认 margin */
+}
+
+/* 侧边栏开关按钮的样式 */
+.sidebar-toggle-button {
+  background: #e0e0e0;
+  border: none;
+  border-radius: 8px;
+  width: 32px;  /* 尺寸大一点 */
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.3s ease-in-out;
+}
+
+.sidebar-toggle-button:hover {
+  background: #c7c7c7;
+}
+
+/* 按钮内部的 SVG 图标 */
+.sidebar-toggle-button svg {
+  width: 20px;
+  height: 20px;
+  color: #c22d2d;
+  transition: transform 0.3s ease-in-out;
+}
+
+
+/* --- 侧边栏收起/展开的动画 --- */
+/* 默认状态 */
+.sidebar {
+  transition: width 0.3s ease-in-out;
+}
+
+/* 当侧边栏有关闭状态的类时 */
+.sidebar.closed {
+  width: 0;
+  padding-left: 0;
+  padding-right: 0;
+  overflow: hidden; /* 隐藏内部所有内容 */
+}
+
+/* 按钮的旋转动画 */
+.sidebar.closed + main .sidebar-toggle-button svg {
+  transform: rotate(180deg);
+}
+
+/* 我们需要把按钮移动到主内容区，当侧边栏关闭时也能看到它 */
+.main-content {
+  position: relative; /* 关键：让内部的绝对定位元素相对于它 */
+}
+
+/* 当侧边栏关闭时，我们需要在主内容区显示一个“幽灵”按钮 */
+.sidebar-toggle-button.floating {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 100;
+}
+
+文件: App.jsx
+内容:
+import React, { useState, useEffect, useCallback } from 'react';
+import { Excalidraw } from "@excalidraw/excalidraw";
+import debounce from 'lodash.debounce';
+
+import '@excalidraw/excalidraw/index.css';
+import './App.css';
+import { db } from './db';
+
+const ContextMenu = ({ x, y, pageId, onRename, onDelete, onClose, pageHistory }) => {
+  useEffect(() => {
+    const handleClickOutside = () => onClose();
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [onClose]);
+
+  const handleRestore = async (timestamp) => {
+    if (window.confirm("确定要恢复到这个历史版本吗？当前绘图将被覆盖。")) {
+      await db.restorePageVersion(pageId, timestamp);
+      window.location.reload(); // 最简单粗暴的刷新方式
+    }
+    onClose();
+  };
+
+  return (
+    <div className="context-menu" style={{ top: y, left: x }}>
+      <button className="context-menu-item" onClick={() => { onRename(); onClose(); }}>重命名</button>
+      <button className="context-menu-item delete" onClick={() => { onDelete(pageId); onClose(); }}>删除页面</button>
+      {/* 历史记录功能 */}
+      {pageHistory && pageHistory.length > 0 && <hr style={{margin: '4px 0', borderTop: '1px solid #eee'}}/>}
+      {pageHistory?.map(version => (
+        <button key={version.timestamp} className="context-menu-item" onClick={() => handleRestore(version.timestamp)}>
+          恢复到 {new Date(version.timestamp).toLocaleTimeString()}
+        </button>
+      )).reverse()}
+    </div>
+  );
+};
+
+// 侧边栏开关按钮的 SVG 图标
+const SidebarToggleIcon = () => (
+  <svg viewBox="0 0 24 24"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"></path></svg>
+);
+
+
+function App() {
+  const [pages, setPages] = useState([]);
+  const [activePageId, setActivePageId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [renamingPageId, setRenamingPageId] = useState(null);
+  const [renameInputValue, setRenameInputValue] = useState('');
+  const [contextMenu, setContextMenu] = useState({ visible: false });
+
+  // 新增：侧边栏状态
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  // 省略大部分已有函数...
+  useEffect(() => {
+    const loadDataFromDB = async () => {
+      setIsLoading(true);
+      let dbPages = await db.getAllPages();
+      dbPages.sort((a, b) => b.id.localeCompare(a.id));
+
+      if (dbPages.length === 0) {
+        const initialPage = { id: `page-${Date.now()}`, name: '我的第一个草稿', data: [], history: [] };
+        await db.upsertPage(initialPage);
+        setPages([initialPage]);
+        setActivePageId(initialPage.id);
+      } else {
+        setPages(dbPages);
+        setActivePageId(dbPages[0]?.id || null);
+      }
+      setIsLoading(false);
+    };
+    loadDataFromDB();
+  }, []);
+
+  const handleDrawingChange = useCallback(
+    debounce(async (elements) => {
+      if (!activePageId) return;
+      // 注意：这里只传入 id 和 data，让 upsertPage 自己处理 history
+      await db.upsertPage({ id: activePageId, data: elements });
+    }, 1000), // 把 debounce 时间延长一点，让快照不会太频繁
+    [activePageId]
+  );
+  
+  const handleAddPage = async () => {
+    const newPage = { id: `page-${Date.now()}`, name: `新草稿`, data: [], history: [] };
+    setPages(currentPages => [newPage, ...currentPages]);
+    setActivePageId(newPage.id);
+    await db.upsertPage(newPage);
+  };
+  
+  const startRename = (page) => { /* ...保持不变... */ setContextMenu({ visible: false }); setRenamingPageId(page.id); setRenameInputValue(page.name); };
+  const handleRenameSubmit = async () => { /* ...保持不变... */ if (!renamingPageId) return; const finalName = renameInputValue.trim() || "未命名草稿"; setPages(pages.map(p => (p.id === renamingPageId ? { ...p, name: finalName } : p))); await db.upsertPage({ id: renamingPageId, name: finalName }); setRenamingPageId(null); };
+  const handleRenameKeyDown = (event) => { /* ...保持不变... */ if (event.key === 'Enter') handleRenameSubmit(); else if (event.key === 'Escape') setRenamingPageId(null); };
+
+  const handleDeletePage = async (pageIdToDelete) => {
+    if (!window.confirm("确定要永久删除这个页面吗？此操作无法撤销。")) return;
+    await db.deletePage(pageIdToDelete);
+    const newPages = pages.filter(p => p.id !== pageIdToDelete);
+    setPages(newPages);
+    if (activePageId === pageIdToDelete) setActivePageId(newPages[0]?.id || null);
+  };
+
+  const handleContextMenu = (event, pageId) => {
+    event.preventDefault();
+    setRenamingPageId(null);
+    setContextMenu({
+      visible: true, x: event.pageX, y: event.pageY, pageId: pageId
+    });
+  };
+
+  const activePage = pages.find(p => p.id === activePageId);
+
+  // 侧边栏按钮组件，可以根据状态决定显示在哪里
+  const ToggleButton = ({ isFloating = false }) => (
+    <button 
+      className={`sidebar-toggle-button ${isFloating ? 'floating' : ''}`}
+      onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+    >
+      <SidebarToggleIcon />
+    </button>
+  );
+
+  if (isLoading) return <div>正在加载...</div>;
+
+  return (
+    <div className="App">
+      <aside className={`sidebar ${isSidebarOpen ? '' : 'closed'}`}>
+        <div className="sidebar-header">
+          <h2>我的页面</h2>
+          <ToggleButton />
+        </div>
+        <button className="add-page-button" onClick={handleAddPage}>+ 新建页面</button>
+        <ul className="page-list">
+          {pages.map(page => (
+            <li key={page.id} onContextMenu={(e) => handleContextMenu(e, page.id)}>
+              {/* ...重命名和按钮的 JSX 保持不变... */}
+              {renamingPageId === page.id ? ( <input type="text" className="rename-input" value={renameInputValue} onChange={(e) => setRenameInputValue(e.target.value)} onBlur={handleRenameSubmit} onKeyDown={handleRenameKeyDown} autoFocus /> ) : ( <button className={page.id === activePageId ? 'active' : ''} onClick={() => setActivePageId(page.id)} onDoubleClick={() => startRename(page)}> {page.name} </button> )}
+            </li>
+          ))}
+        </ul>
+      </aside>
+
+      <main className="main-content">
+        {!isSidebarOpen && <ToggleButton isFloating={true} />}
+        {activePage && (
+          <div className="excalidraw-wrapper">
+            <Excalidraw key={activePage.id} initialData={{ elements: activePage.data }} onChange={handleDrawingChange} />
+          </div>
+        )}
+      </main>
+
+      {contextMenu.visible && (
+        <ContextMenu 
+          x={contextMenu.x} y={contextMenu.y} pageId={contextMenu.pageId}
+          onRename={() => startRename(pages.find(p => p.id === contextMenu.pageId))}
+          onDelete={handleDeletePage}
+          onClose={() => setContextMenu({ visible: false })}
+          pageHistory={pages.find(p => p.id === contextMenu.pageId)?.history}
+        />
+      )}
+    </div>
+  );
+}
+
+export default App;
+
+文件: db.js
+内容:
+import { openDB } from 'idb';
+
+const DB_NAME = 'my-excalidraw-app-db';
+const DB_VERSION = 1; 
+const STORE_NAME = 'pages';
+
+const dbPromise = openDB(DB_NAME, DB_VERSION, {
+  upgrade(db) {
+    if (!db.objectStoreNames.contains(STORE_NAME)) {
+      db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+    }
+  },
+});
+
+export const db = {
+  async getAllPages() {
+    return (await dbPromise).getAll(STORE_NAME);
+  },
+
+  // 修改：upsertPage 现在也负责管理历史记录
+  async upsertPage(page) {
+    const tx = (await dbPromise).transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    
+    // 获取当前数据库中的页面数据，以便更新 history
+    const currentPageState = await store.get(page.id);
+
+    // 创建一个新的 history 数组
+    let newHistory = currentPageState?.history || [];
+    
+    // 如果 data 字段存在，说明这是一次绘图更新，需要创建快照
+    if (page.data) {
+      // 将当前的 data 作为一个快照推入 history
+      newHistory.push({
+        timestamp: Date.now(),
+        data: currentPageState?.data || [] // 保存的是上一个状态
+      });
+
+      // 限制历史记录的数量，比如只保留最新的 10 个
+      if (newHistory.length > 10) {
+        newHistory = newHistory.slice(newHistory.length - 10);
+      }
+    }
+
+    // 组合最新的页面数据和新的历史记录
+    const pageToStore = {
+      ...currentPageState, // 保留旧的字段
+      ...page,             // 应用新的字段 (name, data etc.)
+      history: newHistory, // 更新历史记录
+    };
+
+    await store.put(pageToStore);
+    return tx.done;
+  },
+
+  async deletePage(id) {
+    return (await dbPromise).delete(STORE_NAME, id);
+  },
+
+  // 新增：恢复到某个历史版本
+  async restorePageVersion(pageId, timestamp) {
+    const tx = (await dbPromise).transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    const page = await store.get(pageId);
+    
+    if (page && page.history) {
+      const versionToRestore = page.history.find(h => h.timestamp === timestamp);
+      if (versionToRestore) {
+        // 将历史版本的数据作为当前数据，但不改变历史记录本身
+        page.data = versionToRestore.data;
+        await store.put(page);
+      }
+    }
+    return tx.done;
+  }
+};
+
+文件: index.css
+内容:
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+
+文件: main.jsx
+内容:
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App.jsx'
+
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+)
+

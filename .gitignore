@@ -1,0 +1,22 @@
+node_modules/
+*.log
+*.pyc
+__pycache__/
+
+# 文件夹
+.idea/
+instance/
+flask_venv/
+static/uploads/
+
+# 一些关键文件！！
+*.json
+*.bak
+.env
+
+*.pyc
+*.pyw
+*.bat
+
+start_repo.py
+gg.bat
