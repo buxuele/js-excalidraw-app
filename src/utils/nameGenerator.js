@@ -12,13 +12,24 @@ const NOUNS = [
   '海洋', '火花', '村庄', '秘密', '微风', '宇宙'
 ];
 
-const VERBS = [
-  '思考', '跳跃', '飞翔', '探索', '编码', '生长', '闪耀', '漂流',
-  '奔跑', '歌唱', '旋转', '发现', '绘画', '追逐', '绽放', '遨游'
-];
-
 const getRandomElement = (arr) => arr[Math.floor(Math.random() * arr.length)];
 
+/**
+ * 生成一个格式为 "YYYYMMDD-形容词名词" 的随机名称
+ * 例如: "20231027-快乐的火箭"
+ */
 export const generateRandomName = () => {
-  return `${getRandomElement(ADJECTIVES)}${getRandomElement(NOUNS)}的${getRandomElement(VERBS)}`;
+  const today = new Date();
+  const year = today.getFullYear();
+  // getMonth() 返回的月份是从 0 开始的 (0-11)，所以需要加 1
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+
+  const datePrefix = `${year}-${month}-${day}`;
+
+  const randomAdjective = getRandomElement(ADJECTIVES);
+  const randomNoun = getRandomElement(NOUNS);
+
+  // 返回最终组合的名称
+  return `${datePrefix}-${randomAdjective}${randomNoun}`;
 };

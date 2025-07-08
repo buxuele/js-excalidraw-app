@@ -42,16 +42,29 @@ function EditorPage({ pageId, onBack }) {
   }, [pageId]);
 
   // --- 关键简化：onChange 只负责一件事，就是把最新的绘图数据存进数据库 ---
-  const handleDrawingChange = useCallback(
+  // const handleDrawingChange = useCallback(
+  //   debounce(async (elements) => {
+  //     // 从数据库获取最新的页面数据，以防 name 等字段丢失
+  //     const currentPage = await db.getPageById(pageId);
+  //     if (currentPage) {
+  //       const updatedPage = { ...currentPage, data: elements };
+  //       await db.upsertPage(updatedPage);
+  //     }
+  //   }, 500),
+  //   [pageId] // 依赖项只有 pageId
+  // );
+
+    const handleDrawingChange = useCallback(
     debounce(async (elements) => {
-      // 从数据库获取最新的页面数据，以防 name 等字段丢失
       const currentPage = await db.getPageById(pageId);
       if (currentPage) {
-        const updatedPage = { ...currentPage, data: elements };
+        // 关键修改：在更新绘图数据的同时，将 thumbnail 设为 null。
+        // 这就相当于一个“脏数据”标记，强制主页重新生成缩略图。
+        const updatedPage = { ...currentPage, data: elements, thumbnail: null };
         await db.upsertPage(updatedPage);
       }
     }, 500),
-    [pageId] // 依赖项只有 pageId
+    [pageId]
   );
   
   // --- 关键简化：返回按钮现在只负责返回 ---
